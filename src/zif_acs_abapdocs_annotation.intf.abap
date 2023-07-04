@@ -13,8 +13,12 @@ interface zif_acs_abapdocs_annotation
     returning value(keys) type t_key_list.
 
   "! raise zcx_tf_abapdocs_anno_not_found if not found
+  "! @parameter key |
+  "! @parameter value_if_initial | if set: in case of not found, this value will be returned instead of raising zcx_tf_abapdocs_anno_not_found
+  "! @parameter value |
   methods get_value
     importing key          type string
+              value_if_initial type string optional
     returning value(value) type string.
 
   "! for keys that can have more than one value
@@ -23,7 +27,7 @@ interface zif_acs_abapdocs_annotation
     importing key           type string
     returning value(values) type zif_acs_abapdocs_annotation=>t_value_list.
 
-  "! used eg for annotations (@enum: [ "off", "on" ])
+  "! used eg for annotation enum (@enum: [ "off", "on" ])
   methods get_value_as_list
     importing key               type string
     returning value(value_list) type zif_acs_abapdocs_annotation=>t_value_list.

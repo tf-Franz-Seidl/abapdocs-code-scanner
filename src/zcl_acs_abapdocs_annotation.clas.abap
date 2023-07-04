@@ -8,23 +8,24 @@ class zcl_acs_abapdocs_annotation definition
     types:
       "! annotation
       begin of t_key_value,
-        "! keyword of annotation (e.g.  'minItems')
+        "! keyword of annotation (e.g. 'minItems')
         key   type string,
         "! value of annotation
         value type string,
       end of t_key_value.
-    types t_key_values type sorted table of t_key_value with unique key key.
+    "! key value list: at for annotation parameter the list must be non-unique
+    types t_key_values type sorted table of t_key_value with non-unique key key.
 
     methods constructor
       importing annotations type t_key_values.
   protected section.
     data annotations type t_key_values.
   private section.
-ENDCLASS.
+endclass.
 
 
 
-CLASS ZCL_ACS_ABAPDOCS_ANNOTATION IMPLEMENTATION.
+class zcl_acs_abapdocs_annotation implementation.
 
 
   method constructor.
@@ -33,7 +34,9 @@ CLASS ZCL_ACS_ABAPDOCS_ANNOTATION IMPLEMENTATION.
 
 
   method zif_acs_abapdocs_annotation~get_keys.
-    keys = value #( for anno in me->annotations ( anno-key ) ).
+    loop at me->annotations assigning field-symbol(<anno>).
+      insert <anno>-key into table keys. " ignore sy-subrc / duplicates (e.g. multiple parameter declerations)
+    endloop.
   endmethod.
 
 
@@ -41,9 +44,13 @@ CLASS ZCL_ACS_ABAPDOCS_ANNOTATION IMPLEMENTATION.
     try.
         value = annotations[ key = key ]-value.
       catch cx_sy_itab_line_not_found into data(lx_not_found).
-        raise exception type zcx_acs_annotation_not_found
-          exporting
-            key = key.
+        if value_if_initial is supplied.
+          value = value_if_initial.
+        else.
+          raise exception type zcx_acs_annotation_not_found
+            exporting
+              key = key.
+        endif.
     endtry.
   endmethod.
 
@@ -68,4 +75,4 @@ CLASS ZCL_ACS_ABAPDOCS_ANNOTATION IMPLEMENTATION.
   method zif_acs_abapdocs_annotation~has_key.
     exists = xsdbool( line_exists( annotations[ key = key ] ) ).
   endmethod.
-ENDCLASS.
+endclass.

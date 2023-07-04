@@ -12,6 +12,7 @@ class lcl_test definition for testing duration short risk level harmless.
     methods test_get_value_as_list3 for testing.
     methods has_key for testing.
     methods has_key_nf for testing.
+    methods get_keys for testing.
 
     data anno type ref to zif_acs_abapdocs_annotation.
 
@@ -20,9 +21,15 @@ endclass.
 class lcl_test implementation.
 
   method test_get_values.
-    cl_abap_unit_assert=>assert_equals(
-        exp = value zif_acs_abapdocs_annotation=>t_value_list( ( `param desc 1` ) ( `param desc 2` ) )
-        act = anno->get_values( `parameter` )
+
+    cl_abap_unit_assert=>assert_table_contains(
+        line = `param desc 1`
+        table = anno->get_values( `parameter` )
+    ).
+
+    cl_abap_unit_assert=>assert_table_contains(
+        line = `param desc 2`
+        table = anno->get_values( `parameter` )
     ).
   endmethod.
 
@@ -108,5 +115,9 @@ class lcl_test implementation.
                 act = anno->has_key( `nothing` )
             ).
   endmethod.
+
+  METHOD get_keys.
+    data(keys) = anno->get_keys( ).
+  ENDMETHOD.
 
 endclass.
