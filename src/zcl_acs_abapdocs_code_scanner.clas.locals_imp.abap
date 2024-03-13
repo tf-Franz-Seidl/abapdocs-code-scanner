@@ -280,7 +280,7 @@ class lcl_abapdocs_reposrc_scanner implementation.
               keyword      = scan_statement_1_keyword
          ).
 
-      when scan_struc_stmnt_type-types.
+      when scan_struc_stmnt_type-types or scan_struc_stmnt_type-constants.
 
         if |{ scan-tokens[ ( scan_statement_1-from + 1 ) ]-str case = lower } { scan-tokens[ ( scan_statement_1-from + 2 ) ]-str case = lower }|
                 = 'begin of'.

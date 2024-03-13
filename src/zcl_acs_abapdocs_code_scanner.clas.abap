@@ -10,9 +10,14 @@ class zcl_acs_abapdocs_code_scanner definition
     "! factory method <br/>
     "! create a code scanner instance for a class/interface/type descriptor<br/>
     "! in error case, returns either an empty tree or a null reference
+    "! @parameter typedescr |
+    "! @parameter create_empty_instance_on_error |
+    "! @parameter absolute_name | needed for structures defined as constants (logical enum)
+    "! @parameter instance |
     class-methods create_by_typedescr
       importing typedescr                      type ref to cl_abap_typedescr
                 create_empty_instance_on_error type abap_bool default abap_true
+                absolute_name                  type abap_abstypename optional
       returning value(instance)                type ref to zcl_acs_abapdocs_code_scanner.
 
     "! get annotations included in the abapDocs of the current method/field
@@ -113,8 +118,11 @@ CLASS ZCL_ACS_ABAPDOCS_CODE_SCANNER IMPLEMENTATION.
 
   method create_by_typedescr.
 
-    data(class_pool_name) = lcl_extractor=>extract_class_pool_name( typedescr->absolute_name ).
-    data(path) = lcl_extractor=>get_path_for_typedescr( typedescr->absolute_name  ).
+    " needed for structures defined as constants (logical enum)
+    data(l_absolute_name) = cond #( when absolute_name is not initial then absolute_name else typedescr->absolute_name ).
+
+    data(class_pool_name) = lcl_extractor=>extract_class_pool_name( l_absolute_name ).
+    data(path) = lcl_extractor=>get_path_for_typedescr( l_absolute_name  ).
 
     if class_pool_name is not initial.
       try.
